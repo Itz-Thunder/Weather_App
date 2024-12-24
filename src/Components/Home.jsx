@@ -33,7 +33,7 @@ const Home = () => {
     return (
         <>
             <div className="row">
-                <h1 className='mt-4 mx-5 px-4'>Weather Forecast : </h1>
+                <h1 className='mt-4 px-5 '>Weather Forecast : </h1>
                 <div className="col-sm-5 mx-auto">
                     <div className="weather-card p-4">
                         <input type="text" ref={inputRef} placeholder="search" className="form-control w-75 d-inline px-4 mb-3" />
