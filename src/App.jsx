@@ -7,7 +7,7 @@ const App = () => {
   return (
     <>
     <BrowserRouter>
-    <div className="container-fluid">
+    <div className="container-fluid p-0">
     <Routes>
       <Route path="/" element={<Home />} />
     </Routes>
