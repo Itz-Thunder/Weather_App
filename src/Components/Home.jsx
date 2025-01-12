@@ -6,30 +6,37 @@ const Home = () => {
     const inputRef = useRef();
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [emptyFieldError, setEmptyFieldError] = useState(false); // New state for empty field error
+    const [error, setError] = useState("");
     const api_key = "2a99811c6db1cf4500664ef6ac01cfe1";
 
     const search = async (city) => {
         if (!city) { 
-            setEmptyFieldError(true);
+            setError("Enter a city name first");
             setLoading(false);
             return;
         }
         
-        setEmptyFieldError(false);
+        setError("");
+        setLoading(true);
         try {
             const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${api_key}`;
             const res = await fetch(api);
             const data = await res.json();
+
+            if (data.cod === "404") { 
+                setError("City not found, please try again.");
+                setLoading(false);
+                return;
+            }
+
             setData(data);
-            setError(false);
+            setError("");
             setLoading(false);
             inputRef.current.value = '';
         } 
         catch (error) {
             console.error("Error while fetching the data from API");
-            setError(true);
+            setError("Error fetching data, please try again.");
             setLoading(false);
         }
     };
@@ -45,15 +52,13 @@ const Home = () => {
                 <div className="col-sm-5 mx-auto">
                     <div className="weather-card p-4">
                         <input type="text" ref={inputRef} placeholder="search" className="form-control w-75 d-inline px-4 mb-3" />
-                        <button onClick={() => { search(inputRef.current.value); setLoading(true); }} className="btn btn-light rounded-5 mx-2">
+                        <button onClick={() => { search(inputRef.current.value); }} className="btn btn-light rounded-5 mx-2">
                             <FaSearch />
                         </button>
                         {loading ? (
                             <p className='text-dark'>Loading weather data, please wait...</p>
                         ) : error ? (
-                            <p className='text-danger'>City not found, please try again.</p>
-                        ) : emptyFieldError ? (
-                            <p className='text-danger'>Enter a city name first</p>
+                            <p className='text-danger'>{error}</p>
                         ) : (
                             <>
                                 <p>
