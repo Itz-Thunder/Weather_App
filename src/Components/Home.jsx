@@ -7,9 +7,17 @@ const Home = () => {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [emptyFieldError, setEmptyFieldError] = useState(false); // New state for empty field error
     const api_key = "2a99811c6db1cf4500664ef6ac01cfe1";
 
     const search = async (city) => {
+        if (!city) { 
+            setEmptyFieldError(true);
+            setLoading(false);
+            return;
+        }
+        
+        setEmptyFieldError(false);
         try {
             const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${api_key}`;
             const res = await fetch(api);
@@ -20,7 +28,7 @@ const Home = () => {
             inputRef.current.value = '';
         } 
         catch (error) {
-            console.error("error while fetching the data from API");
+            console.error("Error while fetching the data from API");
             setError(true);
             setLoading(false);
         }
@@ -43,14 +51,13 @@ const Home = () => {
                         {loading ? (
                             <p className='text-dark'>Loading weather data, please wait...</p>
                         ) : error ? (
-                            inputRef.current.value=== "" ? (
-                                <p className='text-danger'>Enter a city name first</p>
-                            ) : <p className='text-danger'>City not found, please try again.</p>
+                            <p className='text-danger'>City not found, please try again.</p>
+                        ) : emptyFieldError ? (
+                            <p className='text-danger'>Enter a city name first</p>
                         ) : (
                             <>
                                 <p>
-                                <img src={`https://openweathermap.org/img/wn/${data.weather?.[0]?.icon}@2x.png`} alt={data.weather?.[0]?.description} className="weather-icon" />
-
+                                    <img src={`https://openweathermap.org/img/wn/${data.weather?.[0]?.icon}@2x.png`} alt={data.weather?.[0]?.description} className="weather-icon" />
                                 </p>
                                 <h3>{data.name}</h3>
                                 <p>
@@ -63,8 +70,7 @@ const Home = () => {
                                     <span className="fs-5 mx-2">
                                         <TiWeatherPartlySunny />
                                     </span> 
-                                    Weather Details : {data.weather?.[0]?.main}
-                                    
+                                    Weather Details: {data.weather?.[0]?.main}
                                 </p>
                                 <div className="row">
                                     <div className="col-sm-6">
